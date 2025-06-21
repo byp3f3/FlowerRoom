@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title_name %}Профиль пользователя {{ user.username }} - FlowerRoom{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card profile-card {% if user.is_superuser %}Admin{% else %}Customer{% endif %} mb-4">
+                <div class="card-header profile-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h3 mb-0">{{ user.username }}</h1>
+                        <span class="badge role-badge 
+                            {% if user.is_superuser %}bg-danger{% else %}bg-success{% endif %}">
+                            {% if user.is_superuser %}Администратор{% else %}Пользователь{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-3">
+                                <span class="detail-label">Email:</span><br>
+                                {% if user.email %}
+                                    <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                                {% else %}
+                                    <span class="text-muted">Не указан</span>
+                                {% endif %}
+                            </p>
+                            
+                            <p class="mb-3">
+                                <span class="detail-label">Имя:</span><br>
+                                {{ user.first_name|default:"Не указано" }}
+                            </p>
+                            
+                            <p class="mb-3">
+                                <span class="detail-label">Фамилия:</span><br>
+                                {{ user.last_name|default:"Не указано" }}
+                            </p>
+                            
+                            <p class="mb-3">
+                                <span class="detail-label">Дата регистрации:</span><br>
+                                {{ user.date_joined|date:"d.m.Y H:i" }}
+                            </p>
+                            
+                            <p class="mb-3">
+                                <span class="detail-label">Последний вход:</span><br>
+                                {{ user.last_login|date:"d.m.Y H:i"|default:"Никогда" }}
+                            </p>
+                            
+                            <p class="mb-3">
+                                <span class="detail-label">Активен:</span><br>
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">Да</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Нет</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 120px; height: 120px; margin: 0 auto; font-size: 3rem;">
+                                {{ user.username|first|upper }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between">
+                    <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Вернуться к списку
+                    </a>
+                    <div>
+                        <a href="{% url 'user_update' user.id %}" class="btn btn-primary me-2">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </a>
+                        <a href="{% url 'user_delete' user.id %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Удалить
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-card {
+        max-width: 800px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid;
+    }
+    .Admin { border-left-color: #dc3545; }
+    .Customer { border-left-color: #20c997; }
+    .role-badge {
+        font-size: 1rem;
+        padding: 0.5em 0.8em;
+    }
+    .profile-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .detail-label {
+        font-weight: 500;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title_name %}FlowerRoom - Магазин растений{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4">Добро пожаловать в FlowerRoom</h1>
+            <p class="lead">Откройте для себя идеальные растения для вашего пространства</p>
+            <a href="{% url 'catalog' %}" class="btn btn-light btn-lg">Перейти в каталог</a>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Популярные растения</h2>
+            <div class="row">
+                {% if main_products %}
+                    {% for product in main_products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card h-100">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                                <p class="card-text mt-auto"><strong>{{ product.price|floatformat:0 }} ₽</strong></p>
+                                <a href="/product/product_details/{{ product.id }}/" class="btn btn-outline-primary mb-2">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-5">Нет товаров для отображения</div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+document.querySelectorAll('.add-to-cart-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const productId = this.getAttribute('data-product-id');
+        fetch('/api/cart/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: `product_id=${productId}&quantity=1`
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || (data.success ? 'Товар добавлен в корзину' : 'Ошибка'));
+        });
+    });
+});
+</script>
+{% endblock %}
